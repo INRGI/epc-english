@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { Link } from "react-router-dom";
 
 export const fadeInUp = keyframes`
   from {
@@ -12,17 +11,18 @@ export const fadeInUp = keyframes`
   }
 `;
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.div<{ isHasActiveCard: boolean }>`
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  padding: 0;
+  padding: 20px;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
   min-height: calc(100% - 40px);
+  position: relative;
+  overflow: hidden;
 
- 
   max-width: calc(100%);
   margin: 0;
 
@@ -36,7 +36,7 @@ export const Wrapper = styled.div`
   }
 `;
 
-export const Card = styled(Link)<{ index: number }>`
+export const Card = styled.div<{ index: number; isActive: boolean }>`
   background-color: #1a1a1a;
   color: #ffffff;
   border: 1px solid #333;
@@ -48,8 +48,8 @@ export const Card = styled(Link)<{ index: number }>`
   flex-direction: column;
   gap: 0.8rem;
 
-  width: 220px;
-  height: 220px;
+  width: ${({ isActive }) => (isActive ? "100%" : "220px")};
+  height: ${({ isActive }) => (isActive ? "100%" : "220px")};
 
   transition: transform 0.2s ease-in-out, box-shadow 0.2s;
   animation: ${fadeInUp} 0.6s ease-out both;
@@ -68,6 +68,27 @@ export const Card = styled(Link)<{ index: number }>`
   @media (max-width: 600px) {
     width: 100%;
   }
+
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+
+  ${({ isActive }) => {
+    if (isActive) {
+      return `
+        transform: scale(1.5);
+        z-index: 1;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      `;
+    } else {
+      return `
+        opacity: 0;
+        transform: scale(0.5);
+      `;
+    }
+  }}
 `;
 
 export const Title = styled.h3`
