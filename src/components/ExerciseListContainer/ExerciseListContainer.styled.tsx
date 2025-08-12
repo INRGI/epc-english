@@ -1,3 +1,4 @@
+// ExerciseListContainer.styled.ts
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 
@@ -5,7 +6,8 @@ export const fadeInUp = keyframes`
   from {
     opacity: 0;
     transform: translateY(20px);
-  } to {
+  } 
+  to {
     opacity: 1;
     transform: translateY(0);
   }
@@ -17,13 +19,11 @@ export const Wrapper = styled.div<{ isHasActiveCard: boolean }>`
   gap: 20px;
   padding: 20px;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   box-sizing: border-box;
   min-height: calc(100% - 40px);
   position: relative;
-  overflow: hidden;
-
-  max-width: calc(100%);
+  max-width: 100%;
   margin: 0;
 
   @media (max-width: 1024px) {
@@ -49,11 +49,12 @@ export const Card = styled.div<{ index: number; isActive: boolean }>`
   gap: 0.8rem;
 
   width: ${({ isActive }) => (isActive ? "100%" : "220px")};
-  height: ${({ isActive }) => (isActive ? "100%" : "220px")};
+  min-height: ${({ isActive }) => (isActive ? "auto" : "220px")};
 
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s;
   animation: ${fadeInUp} 0.6s ease-out both;
   animation-delay: ${({ index }) => index * 0.1}s;
+
+  transition: all 0.3s ease-in-out;
 
   &:hover {
     background-color: #222;
@@ -61,34 +62,23 @@ export const Card = styled.div<{ index: number; isActive: boolean }>`
     box-shadow: 0 8px 24px rgba(255, 255, 255, 0.05);
   }
 
-  @media (max-width: 1024px) {
-    width: 220px;
-  }
+  ${({ isActive }) =>
+    !isActive &&
+    `
+      cursor: pointer;
+    `}
 
-  @media (max-width: 600px) {
-    width: 100%;
-  }
+  ${({ isActive }) =>
+    !isActive &&
+    `
+      @media (max-width: 1024px) {
+        width: 220px;
+      }
 
-  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-
-  ${({ isActive }) => {
-    if (isActive) {
-      return `
-        transform: scale(1.5);
-        z-index: 1;
-        position: absolute;
-        top: 0;
-        left: 0;
+      @media (max-width: 600px) {
         width: 100%;
-        height: 100%;
-      `;
-    } else {
-      return `
-        opacity: 0;
-        transform: scale(0.5);
-      `;
-    }
-  }}
+      }
+    `}
 `;
 
 export const Title = styled.h3`
