@@ -22,25 +22,17 @@ const popIn = keyframes`
 `;
 
 const Root = styled.div`
-  --bg: #0f1113;
-  --card: #141518;
-  --muted: #9aa0a6;
   color: #e9eef2;
   font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI",
     "Helvetica Neue", Arial;
   width: 100%;
-  max-width: 920px;
   margin: 0 auto;
-  padding: 20px;
   box-sizing: border-box;
 `;
 
 const Panel = styled.div`
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  padding: 18px;
-  border-radius: 14px;
-  box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+  padding: 0;
+  margin: 0;
 `;
 
 const Controls = styled.div`
@@ -142,6 +134,10 @@ const Secondary = styled(Button)`
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.04);
 `;
+
+const descriptionTexterea = `
+  
+`
 
 export const RandomCardShufflerBlock: React.FC<{ onClose?: () => void }> = ({
   onClose,
@@ -257,12 +253,7 @@ export const RandomCardShufflerBlock: React.FC<{ onClose?: () => void }> = ({
           <div style={{ flex: 1 }}>
             <Textarea
               ref={textareaRef}
-              placeholder={`Вставте слова або фрази — кожна з нової строки.
-
-            Приклад:
-            hello
-            how are you?
-            book`}
+              placeholder={descriptionTexterea}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               aria-label="Words input"
