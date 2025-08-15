@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
+import { createPortal } from "react-dom";
 
 const shuffleArray = <T,>(arr: T[]) => {
   const a = arr.slice();
@@ -91,7 +92,7 @@ const Button = styled.button<{ subtle?: boolean }>`
 `;
 
 const Meta = styled.div`
-  color: var(--muted);
+  color: #9aa0a6;
   font-size: 13px;
 `;
 
@@ -100,13 +101,15 @@ const BigCardModal = styled.div`
   inset: 0;
   display: grid;
   place-items: center;
+  color: #e9eef2;
   background: rgba(2, 6, 10, 0.6);
-  z-index: 60;
+  z-index: 999;
 `;
 
 const BigCard = styled.div`
-  width: min(760px, calc(100% - 48px));
-  background: var(--card);
+  width: min(760px);
+  max-width: 1000px;
+  background: #141518;
   border-radius: 14px;
   padding: 28px;
   box-shadow: 0 20px 80px rgba(1, 3, 9, 0.8);
@@ -135,9 +138,12 @@ const Secondary = styled(Button)`
   border: 1px solid rgba(255, 255, 255, 0.04);
 `;
 
-const descriptionTexterea = `
-  
-`
+const descriptionTexterea = `Paste the list of cards you want to practice, one per line.
+
+For example:
+Card 1
+Card 2
+`;
 
 export const RandomCardShufflerBlock: React.FC<{ onClose?: () => void }> = ({
   onClose,
@@ -265,8 +271,7 @@ export const RandomCardShufflerBlock: React.FC<{ onClose?: () => void }> = ({
                 marginTop: 8,
               }}
             >
-              <Meta>{lines.length} рядків</Meta>
-              <Meta>Підтримується: Ctrl/Cmd + Enter для створення</Meta>
+              <Meta>{lines.length} Cards</Meta>
             </div>
           </div>
         </Controls>
@@ -295,55 +300,60 @@ export const RandomCardShufflerBlock: React.FC<{ onClose?: () => void }> = ({
         </div>
       </Panel>
 
-      {isPracticeOpen && (
-        <BigCardModal onClick={handleClosePractice}>
-          <BigCard onClick={(e) => e.stopPropagation()}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 16,
-              }}
-            >
-              <Meta>
-                {queue.length > 0 ? `${playIndex + 1} / ${queue.length}` : "—"}
-              </Meta>
-              <div>
+      {isPracticeOpen &&
+        createPortal(
+          <BigCardModal onClick={handleClosePractice}>
+            <BigCard onClick={(e) => e.stopPropagation()}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 16,
+                  color: "#e7eef3",
+                }}
+              >
+                <Meta>
+                  {queue.length > 0
+                    ? `${playIndex + 1} / ${queue.length}`
+                    : "—"}
+                </Meta>
+                <div>
+                  <Secondary
+                    subtle
+                    onClick={handleShuffleQueue}
+                    style={{ marginRight: 8 }}
+                  >
+                    Shuffle
+                  </Secondary>
+                  <Button onClick={handleClosePractice}>Close</Button>
+                </div>
+              </div>
+
+              {queue.length > 0 ? (
+                <BigText key={`${queue[playIndex].id}-${playIndex}`}>
+                  {queue[playIndex].text}
+                </BigText>
+              ) : (
+                <BigText>Немає карток — створіть їх спочатку</BigText>
+              )}
+
+              <ControlsRow>
                 <Secondary
                   subtle
-                  onClick={handleShuffleQueue}
-                  style={{ marginRight: 8 }}
+                  onClick={handlePrev}
+                  disabled={queue.length === 0}
                 >
-                  Shuffle
+                  Prev
                 </Secondary>
-                <Button onClick={handleClosePractice}>Close</Button>
-              </div>
-            </div>
-
-            {queue.length > 0 ? (
-              <BigText key={`${queue[playIndex].id}-${playIndex}`}>
-                {queue[playIndex].text}
-              </BigText>
-            ) : (
-              <BigText>Немає карток — створіть їх спочатку</BigText>
-            )}
-
-            <ControlsRow>
-              <Secondary
-                subtle
-                onClick={handlePrev}
-                disabled={queue.length === 0}
-              >
-                Prev
-              </Secondary>
-              <Button onClick={handleNext} disabled={queue.length === 0}>
-                Next
-              </Button>
-            </ControlsRow>
-          </BigCard>
-        </BigCardModal>
-      )}
+                <Button onClick={handleNext} disabled={queue.length === 0}>
+                  Next
+                </Button>
+              </ControlsRow>
+            </BigCard>
+          </BigCardModal>,
+          document.body
+        )}
     </Root>
   );
 };

@@ -19,11 +19,11 @@ export const Wrapper = styled.div<{ isHasActiveCard: boolean }>`
   gap: 20px;
   padding: 20px;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   box-sizing: border-box;
   min-height: calc(100% - 40px);
   position: relative;
-  max-width: 100%;
+  max-width: calc((220px * 3) + 20px + 4rem);
   margin: 0;
 
   @media (max-width: 1024px) {
@@ -47,8 +47,9 @@ export const Card = styled.div<{ index: number; isActive: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-
+  max-width: calc(90%);
   width: ${({ isActive }) => (isActive ? "100%" : "220px")};
+  min-width: ${({ isActive }) => (isActive ? "Calc(100%)" : "220px")};
   min-height: ${({ isActive }) => (isActive ? "auto" : "220px")};
 
   animation: ${fadeInUp} 0.6s ease-out both;
@@ -57,9 +58,13 @@ export const Card = styled.div<{ index: number; isActive: boolean }>`
   transition: all 0.3s ease-in-out;
 
   &:hover {
-    background-color: #222;
-    transform: translateY(-6px);
-    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.05);
+    ${({ isActive }) =>
+      !isActive &&
+      `
+        background-color: #222;
+        transform: translateY(-6px);
+        box-shadow: 0 8px 24px rgba(255, 255, 255, 0.05);
+      `}
   }
 
   ${({ isActive }) =>
