@@ -50,12 +50,12 @@ export const Card = styled.div<{ index: number; isActive: boolean }>`
   max-width: calc(90%);
   width: ${({ isActive }) => (isActive ? "100%" : "220px")};
   min-width: ${({ isActive }) => (isActive ? "Calc(100%)" : "220px")};
-  min-height: ${({ isActive }) => (isActive ? "auto" : "220px")};
+  min-height: ${({ isActive }) => (isActive ? "auto" : "120px")};
 
   animation: ${fadeInUp} 0.6s ease-out both;
   animation-delay: ${({ index }) => index * 0.1}s;
-
-  transition: all 0.3s ease-in-out;
+  justify-content: center;
+  align-items: center;
 
   &:hover {
     ${({ isActive }) =>
