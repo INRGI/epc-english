@@ -7,6 +7,7 @@ import {
   Wrapper,
 } from "./ExerciseListContainer.styled";
 import RandomCardShufflerBlock from "../RandomCardShufflerBlock";
+import WordGapFiller from "../WordGapFiller";
 
 type GameCard = {
   title: string;
@@ -25,11 +26,11 @@ export const ExerciseCards: React.FC = () => {
         <RandomCardShufflerBlock onClose={() => setActiveCard(null)} />
       ),
     },
-    {
-      title: "Will open in the future",
-      description: "Will open in the future",
-      gameComponent: <RandomCardShufflerBlock />,
-    },
+    // {
+    //   title: "Word Gap Filler",
+    //   description: "Fill in the missing words",
+    //   gameComponent: <WordGapFiller />,
+    // },
   ];
 
   return (

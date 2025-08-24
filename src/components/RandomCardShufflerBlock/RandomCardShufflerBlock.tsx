@@ -226,7 +226,7 @@ export const RandomCardShufflerBlock: React.FC<{ onClose?: () => void }> = ({
                   {queue[playIndex].text}
                 </BigText>
               ) : (
-                <BigText>Немає карток — створіть їх спочатку</BigText>
+                <BigText>No cards. Please create some.</BigText>
               )}
 
               <ControlsRow>
