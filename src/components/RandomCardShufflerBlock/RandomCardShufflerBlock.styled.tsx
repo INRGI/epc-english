@@ -99,6 +99,8 @@ export const BigCard = styled.div`
   box-shadow: 0 20px 80px rgba(1, 3, 9, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.03);
   text-align: center;
+  max-height: 80vh; 
+  overflow-y: auto; 
 `;
 
 export const BigText = styled.div`

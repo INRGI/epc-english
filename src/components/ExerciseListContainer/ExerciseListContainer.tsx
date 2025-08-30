@@ -26,11 +26,11 @@ export const ExerciseCards: React.FC = () => {
         <RandomCardShufflerBlock onClose={() => setActiveCard(null)} />
       ),
     },
-    // {
-    //   title: "Word Gap Filler",
-    //   description: "Fill in the missing words",
-    //   gameComponent: <WordGapFiller />,
-    // },
+    {
+      title: "Word Gap Filler",
+      description: "Fill in the missing words",
+      gameComponent: <WordGapFiller onClose={() => setActiveCard(null)}/>,
+    },
   ];
 
   return (

@@ -1,24 +1,49 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+import {
+  BigCard,
+  BigCardModal,
+  BigText,
+  Button,
+  CloseIcon,
+  Controls,
+  ControlsRow,
+  Meta,
+  Panel,
+  Root,
+  Secondary,
+  Textarea,
+} from ".././RandomCardShufflerBlock/RandomCardShufflerBlock.styled";
 
-interface WordGapFillerProps {
-  initialText?: string;
+interface WordGapFillerBlockProps {
+  onClose?: () => void;
   hideRatio?: number;
 }
 
-const defaultText = `Learning English is not only about studying grammar,
-but also about practicing speaking, listening, reading, and writing skills.
-The more you practice, the more confident you become.`;
+const descriptionTexterea = `Paste the text where you want to generate gaps.
 
-export const WordGapFiller: React.FC<WordGapFillerProps> = ({
-  initialText = defaultText,
+For example:
+Learning English is not only about studying grammar,
+but also about practicing speaking, listening, reading, and writing skills.
+`;
+
+export const WordGapFillerBlock: React.FC<WordGapFillerBlockProps> = ({
+  onClose,
   hideRatio = 0.3,
 }) => {
-  const [userAnswers, setUserAnswers] = useState<string[]>([]);
+  const [input, setInput] = useState<string>("");
+  const [isPracticeOpen, setIsPracticeOpen] = useState(false);
+  const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
   const [isChecked, setIsChecked] = useState(false);
 
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
   const words = useMemo(() => {
-    return initialText.split(/\s+/).map((w) => w.trim());
-  }, [initialText]);
+    return input
+      .split(/\s+/)
+      .map((w) => w.trim())
+      .filter((w) => w.length > 0);
+  }, [input]);
 
   const hiddenWords = useMemo(() => {
     const hidden = new Set<number>();
@@ -28,105 +53,166 @@ export const WordGapFiller: React.FC<WordGapFillerProps> = ({
     return hidden;
   }, [words, hideRatio]);
 
+  useEffect(() => {
+    if (!isPracticeOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") handleClosePractice();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isPracticeOpen]);
+
+  const handleGenerate = () => {
+    if (words.length === 0) return;
+    setIsPracticeOpen(true);
+    textareaRef.current?.blur();
+  };
+
+  const handleClosePractice = () => {
+    setIsPracticeOpen(false);
+    setIsChecked(false);
+    setUserAnswers({});
+  };
+
   const handleChange = (value: string, index: number) => {
-    const newAnswers = [...userAnswers];
-    newAnswers[index] = value;
-    setUserAnswers(newAnswers);
+    setUserAnswers((prev) => ({ ...prev, [index]: value }));
   };
 
-  const checkAnswers = () => {
-    setIsChecked(true);
-  };
-
+  const checkAnswers = () => setIsChecked(true);
   const reset = () => {
     setIsChecked(false);
-    setUserAnswers([]);
+    setUserAnswers({});
   };
 
   return (
-    <div style={{ padding: 16, color: "#e7eef3", background: "#1e1e1e", borderRadius: 12 }}>
-      <h2 style={{ marginBottom: 12 }}>Word Gap Filler</h2>
-      <p style={{ lineHeight: 1.8 }}>
-        {words.map((word, idx) =>
-          hiddenWords.has(idx) ? (
-            <input
-              key={idx}
-              type="text"
-              value={userAnswers[idx] || ""}
-              onChange={(e) => handleChange(e.target.value, idx)}
-              style={{
-                width: Math.max(50, word.length * 10),
-                margin: "0 4px",
-                padding: "4px 6px",
-                borderRadius: 6,
-                border: "1px solid #444",
-                background: "#111",
-                color: "#e7eef3",
-                textAlign: "center",
-              }}
-              disabled={isChecked}
+    <Root style={{ minWidth: 400 }}>
+      <Panel>
+        <Controls>
+          <CloseIcon onClick={onClose}>×</CloseIcon>
+          <div style={{ flex: 1 }}>
+            <Textarea
+              ref={textareaRef}
+              placeholder={descriptionTexterea}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              aria-label="Gap text input"
             />
-          ) : (
-            <span key={idx} style={{ marginRight: 6 }}>
-              {word}
-            </span>
-          )
-        )}
-      </p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginTop: 8,
+              }}
+            >
+              <Meta>{words.length} Words</Meta>
+            </div>
+          </div>
+        </Controls>
 
-      <div style={{ marginTop: 16, display: "flex", gap: 10 }}>
-        <button
-          onClick={checkAnswers}
-          disabled={isChecked}
-          style={{
-            background: "#d32f2f",
-            color: "white",
-            border: "none",
-            padding: "8px 16px",
-            borderRadius: 8,
-            cursor: "pointer",
-          }}
-        >
-          Check
-        </button>
-        <button
-          onClick={reset}
-          style={{
-            background: "#444",
-            color: "white",
-            border: "none",
-            padding: "8px 16px",
-            borderRadius: 8,
-            cursor: "pointer",
-          }}
-        >
-          Reset
-        </button>
-      </div>
-
-      {isChecked && (
-        <div style={{ marginTop: 16 }}>
-          <h4>Results:</h4>
-          <ul>
-            {words.map((word, idx) =>
-              hiddenWords.has(idx) ? (
-                <li key={idx}>
-                  <strong>{word}</strong> —{" "}
-                  {userAnswers[idx] === word ? (
-                    <span style={{ color: "lightgreen" }}>Correct</span>
-                  ) : (
-                    <span style={{ color: "tomato" }}>
-                      Wrong ({userAnswers[idx] || "—"})
-                    </span>
-                  )}
-                </li>
-              ) : null
-            )}
-          </ul>
+        <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+          <Button onClick={handleGenerate} disabled={words.length === 0}>
+            Generate Gaps
+          </Button>
+          <Button
+            onClick={() => setInput("")}
+            subtle
+            disabled={words.length === 0}
+          >
+            Clear
+          </Button>
         </div>
-      )}
-    </div>
+      </Panel>
+
+      {isPracticeOpen &&
+        createPortal(
+          <BigCardModal onClick={handleClosePractice}>
+            <BigCard onClick={(e) => e.stopPropagation()}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 16,
+                  color: "#e7eef3",
+                }}
+              >
+                <Meta>Fill in the missing words</Meta>
+                <div>
+                  <Secondary subtle onClick={reset} style={{ marginRight: 8 }}>
+                    Reset
+                  </Secondary>
+                  <Button onClick={handleClosePractice}>Close</Button>
+                </div>
+              </div>
+
+              <BigText
+                style={{
+                  lineHeight: 1.8,
+                  textAlign: "left",
+                  whiteSpace: "normal",
+                  wordBreak: "break-word",
+                }}
+              >
+                {words.map((word, idx) =>
+                  hiddenWords.has(idx) ? (
+                    <input
+                      key={idx}
+                      type="text"
+                      value={userAnswers[idx] || ""}
+                      onChange={(e) => handleChange(e.target.value, idx)}
+                      style={{
+                        width: Math.max(50, word.length * 10),
+                        margin: "0 4px",
+                        padding: "4px 6px",
+                        borderRadius: 6,
+                        border: "1px solid #444",
+                        background: "#111",
+                        color: "#e7eef3",
+                        textAlign: "center",
+                      }}
+                      disabled={isChecked}
+                    />
+                  ) : (
+                    <span key={idx} style={{ marginRight: 6 }}>
+                      {word}
+                    </span>
+                  )
+                )}
+              </BigText>
+
+              <ControlsRow>
+                <Button onClick={checkAnswers} disabled={isChecked}>
+                  Check
+                </Button>
+              </ControlsRow>
+
+              {isChecked && (
+                <div style={{ marginTop: 16 }}>
+                  <h4>Results:</h4>
+                  <ul style={{ maxHeight: 200, overflowY: "auto" }}>
+                    {words.map((word, idx) =>
+                      hiddenWords.has(idx) ? (
+                        <li key={idx}>
+                          <strong>{word}</strong> —{" "}
+                          {userAnswers[idx] === word ? (
+                            <span style={{ color: "lightgreen" }}>Correct</span>
+                          ) : (
+                            <span style={{ color: "tomato" }}>
+                              Wrong ({userAnswers[idx] || "—"})
+                            </span>
+                          )}
+                        </li>
+                      ) : null
+                    )}
+                  </ul>
+                </div>
+              )}
+            </BigCard>
+          </BigCardModal>,
+          document.body
+        )}
+    </Root>
   );
 };
 
-export default WordGapFiller;
+export default WordGapFillerBlock;
