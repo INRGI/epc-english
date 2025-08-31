@@ -194,7 +194,8 @@ export const WordGapFillerBlock: React.FC<WordGapFillerBlockProps> = ({
                       hiddenWords.has(idx) ? (
                         <li key={idx}>
                           <strong>{word}</strong> —{" "}
-                          {userAnswers[idx] === word ? (
+                          {userAnswers[idx]?.trim().toLowerCase() ===
+                          word.toLowerCase() ? (
                             <span style={{ color: "lightgreen" }}>Correct</span>
                           ) : (
                             <span style={{ color: "tomato" }}>
