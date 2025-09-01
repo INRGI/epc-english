@@ -20,7 +20,7 @@ interface WordGapFillerBlockProps {
   hideRatio?: number;
 }
 
-const descriptionTexterea = `Paste the text where you want to generate gaps.
+const descriptionTexterea = `Paste the text to randomly generate gaps in it.
 
 For example:
 Learning English is not only about studying grammar,

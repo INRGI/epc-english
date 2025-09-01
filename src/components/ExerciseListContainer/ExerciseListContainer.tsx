@@ -28,7 +28,7 @@ export const ExerciseCards: React.FC = () => {
     },
     {
       title: "Word Gap Filler",
-      description: "Fill in the missing words",
+      description: "Generate word gap fillers",
       gameComponent: <WordGapFiller onClose={() => setActiveCard(null)}/>,
     },
   ];
